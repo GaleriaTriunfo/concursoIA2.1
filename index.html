@@ -1,0 +1,636 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+<!--
+CONCURSO IA 2.1
+PARA CONFIGURAR O SUPABASE, PESQUISE NESTE ARQUIVO POR:
+https://xacuawtdrdqjoyxmkykg.supabase.co
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Concurso IA 2.1 Comercial</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+ --bg:#eef3f9;--surface:#fff;--surface2:#f7faff;--text:#142033;--muted:#708096;
+ --primary:#2f6fed;--primary2:#6c63ff;--accent:#10b981;--danger:#e05260;
+ --border:#dfe6ef;--shadow:0 14px 40px rgba(29,53,87,.10);--radius:20px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,#eaf1ff,#f6f8fb 28%,#eef3f9);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app-shell{min-height:100vh}
+.topbar{
+ position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);
+ border-bottom:1px solid rgba(223,230,239,.9);padding:12px 14px
+}
+.topbar-inner{width:min(1180px,100%);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;display:grid;place-items:center;font-weight:900;box-shadow:0 10px 24px rgba(47,111,237,.25)}
+.brand h1{margin:0;font-size:1.02rem}.brand p{margin:3px 0 0;color:var(--muted);font-size:.77rem}
+.btn{border:0;border-radius:13px;padding:11px 14px;font-weight:800;transition:.16s transform,.16s filter}
+.btn:active{transform:scale(.98)}.btn:hover{filter:brightness(1.03)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),#4f7ff5);color:#fff}
+.btn-secondary{background:#eaf1ff;color:#245aba}
+.btn-ghost{background:#fff;border:1px solid var(--border);color:var(--text)}
+.btn-danger{background:#fff0f1;border:1px solid #ffd1d5;color:#c92a2a}
+.container{width:min(1180px,94%);margin:22px auto 100px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+.hidden{display:none!important}
+.hero{display:grid;grid-template-columns:1.35fr .65fr;gap:18px;align-items:stretch}
+.hero-main{
+ min-height:420px;display:flex;flex-direction:column;justify-content:center;
+ background:radial-gradient(circle at top right,rgba(108,99,255,.13),transparent 30%),linear-gradient(145deg,#fff,#f8fbff)
+}
+.badge{display:inline-flex;width:max-content;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:#edf3ff;color:#245aba;font-size:.75rem;font-weight:900}
+.badge.green{background:#ebfaf5;color:#087f5b}
+.hero h2{font-size:clamp(2.2rem,6vw,4.5rem);letter-spacing:-.045em;line-height:1.02;margin:15px 0}
+.hero p{max-width:720px;color:var(--muted);font-size:1.05rem;line-height:1.65}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.side-cards{display:grid;gap:12px}
+.mini{border:1px solid var(--border);border-radius:18px;background:#fff;padding:16px}
+.mini b{display:block;color:var(--primary);font-size:1.1rem;margin-bottom:5px}.mini span{color:var(--muted);font-size:.86rem;line-height:1.4}
+.dashboard-layout{display:grid;grid-template-columns:260px 1fr;gap:18px}
+.sidebar{height:max-content;position:sticky;top:84px}
+.userbox{display:flex;gap:10px;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.avatar{width:46px;height:46px;border-radius:50%;background:#eaf1ff;color:#245aba;display:grid;place-items:center;font-weight:900}
+.user-meta b{display:block}.user-meta small{display:block;color:var(--muted);font-size:.75rem;margin-top:3px}
+.menu{display:grid;gap:6px;margin:14px 0}
+.menu button{border:0;background:transparent;text-align:left;padding:11px 12px;border-radius:11px;font-weight:800;color:#526177}
+.menu button.active{background:#eaf1ff;color:#245aba}
+.content{display:grid;gap:16px}
+.view{display:none}.view.active{display:block}
+.focus-card{background:linear-gradient(135deg,#173f8f,#2f6fed 58%,#6288ff);color:#fff}
+.focus-card h2{margin:9px 0}.focus-card p{color:#dce7ff;line-height:1.55}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.stat{border:1px solid var(--border);background:#fff;border-radius:16px;padding:16px}
+.stat b{display:block;font-size:1.55rem;color:var(--primary)}.stat span{font-size:.8rem;color:var(--muted)}
+.progress{height:9px;background:#e8eef6;border-radius:999px;overflow:hidden;margin:6px 0 12px}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--accent))}
+.section-title{margin:0 0 8px}.muted{color:var(--muted);line-height:1.55}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.chip{border:1px solid var(--border);background:#fff;padding:9px 12px;border-radius:999px;font-weight:800;color:#48596f}.chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.lesson{border:1px solid var(--border);background:#f9fbfe;border-radius:16px;padding:18px;line-height:1.65}
+.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.controls label{display:grid;gap:6px;font-size:.8rem;font-weight:800;color:#58677b}
+select,input{border:1px solid var(--border);border-radius:11px;padding:10px;background:#fff}
+.question{border:1px solid var(--border);background:#fff;border-radius:15px;padding:16px;margin:12px 0}
+.option{display:flex;gap:9px;padding:10px;background:#f8fafc;border:1px solid #edf1f5;border-radius:10px;margin:7px 0}
+.result{margin-top:12px;padding:14px;border-radius:13px;background:#f1f7ff;border:1px solid #d5e4ff}
+.empty{border:1px dashed var(--border);border-radius:14px;padding:20px;text-align:center;color:var(--muted)}
+.footer{width:min(1180px,94%);margin:32px auto 90px;background:#132033;color:#c9d4e3;border-radius:16px;padding:18px;font-size:.82rem;line-height:1.55}
+.bottom-nav{display:none}
+.status-box{margin-top:12px;padding:12px 14px;border-radius:12px;background:#fff8e6;border:1px solid #ffe0a3;color:#7a5b00;font-size:.84rem;line-height:1.45}
+
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.admin-card{border:1px solid var(--border);border-radius:16px;padding:16px;background:#fff}
+.admin-card h3{margin-top:0}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+th{color:#526177;background:#f8fafc}
+.plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.plan-card{border:1px solid var(--border);border-radius:16px;padding:16px;background:#fff}
+.plan-card.featured{border-color:#9dbbff;box-shadow:0 12px 30px rgba(47,111,237,.12)}
+.plan-card h3{margin-top:0}.price{font-size:1.7rem;font-weight:900;color:var(--primary)}
+.access-ok{background:#eafaf4;color:#087f5b;padding:7px 10px;border-radius:999px;font-size:.75rem;font-weight:900}
+.access-off{background:#fff0f1;color:#c92a2a;padding:7px 10px;border-radius:999px;font-size:.75rem;font-weight:900}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-grid label{display:grid;gap:6px;font-size:.8rem;font-weight:800;color:#58677b}
+.note{padding:12px 14px;border-radius:12px;background:#f8fafc;border:1px solid var(--border);color:#5c6b7e;font-size:.82rem;line-height:1.45}
+@media(max-width:800px){.admin-grid,.plan-grid,.form-grid{grid-template-columns:1fr}}
+
+@media(max-width:900px){
+ .hero{grid-template-columns:1fr}.side-cards{grid-template-columns:repeat(2,1fr)}
+ .dashboard-layout{grid-template-columns:1fr}.sidebar{position:static}
+ .menu{display:none}.bottom-nav{display:flex;position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:60;width:min(760px,calc(100% - 18px));overflow-x:auto;gap:4px;background:rgba(19,32,51,.97);padding:8px;border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.24)}
+ .bottom-nav button{flex:1 0 auto;border:0;background:transparent;color:#dfe7f4;border-radius:11px;padding:10px 11px;font-size:.76rem;font-weight:800}
+ .bottom-nav button.active{background:#2f6fed;color:#fff}
+}
+@media(max-width:620px){
+ .container{width:94%;margin-top:14px}.card{padding:17px;border-radius:17px}
+ .stats{grid-template-columns:1fr 1fr}.controls{grid-template-columns:1fr}
+ .side-cards{grid-template-columns:1fr 1fr}.hero-main{min-height:auto}.hero h2{font-size:2.25rem}
+ .topbar-inner{align-items:flex-start}.brand p{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+<header class="topbar">
+ <div class="topbar-inner">
+  <div class="brand">
+   <div class="logo">CI</div>
+   <div><h1>Concurso IA 2.1</h1><p>Web • Conta • Nuvem • Modo local</p></div>
+  </div>
+  <div>
+   <button id="topGoogleBtn" class="btn btn-primary">Entrar com Google</button>
+  </div>
+ </div>
+</header>
+
+<main class="container">
+ <section id="landing">
+  <div class="hero">
+   <div class="card hero-main">
+    <span class="badge">VERSÃO 2.1 COMERCIAL</span>
+    <h2>Uma plataforma de estudo que funciona mesmo antes da nuvem.</h2>
+    <p>Use agora em modo local e, quando configurar Supabase + Google, ative conta individual e sincronização do progresso sem alterar a experiência principal.</p>
+    <div class="hero-actions">
+     <button id="demoBtn" class="btn btn-primary">Entrar agora — modo local</button>
+     <button id="googleBtn" class="btn btn-secondary">Continuar com Google</button>
+    </div>
+    <div id="configStatus" class="status-box"></div>
+   </div>
+   <div class="side-cards">
+    <div class="mini"><b>Funciona local</b><span>Não depende de login para testar e usar.</span></div>
+    <div class="mini"><b>Google opcional</b><span>Ative quando configurar sua conta Supabase.</span></div>
+    <div class="mini"><b>Responsivo</b><span>Interface redesenhada para Android.</span></div>
+    <div class="mini"><b>Progresso salvo</b><span>Localmente ou na nuvem, conforme o modo.</span></div>
+   </div>
+  </div>
+ </section>
+
+ <section id="app" class="hidden">
+  <div class="dashboard-layout">
+   <aside class="card sidebar">
+    <div class="userbox">
+     <div class="avatar" id="avatar">U</div>
+     <div class="user-meta"><b id="userName">Usuário</b><small id="userEmail">Modo local</small></div>
+    </div>
+    <div class="menu">
+     <button data-view="dashboard" class="active">Painel</button>
+     <button data-view="study">Estudar</button>
+     <button data-view="questions">Questões</button>
+     <button data-view="reviews">Revisões</button>
+     <button data-view="plans">Planos</button><button data-view="admin">Admin</button><button data-view="plans">Planos</button><button data-view="admin">Admin</button><button data-view="profile">Perfil</button>
+    </div>
+    <button id="logoutBtn" class="btn btn-danger" style="width:100%">Sair</button>
+   </aside>
+
+   <section class="content">
+    <div id="dashboard" class="view active">
+     <div class="card focus-card">
+      <span class="badge green">FOCO DE HOJE</span>
+      <h2 id="focusTitle">Português + prática</h2>
+      <p id="focusText">Faça um bloco curto de estudo e finalize com questões.</p>
+      <button class="btn btn-secondary" data-view="study">Começar sessão</button>
+     </div>
+     <div id="stats" class="stats"></div><div class="card" style="margin-bottom:14px"><h3 class="section-title">Acesso comercial</h3><div id="dashAccess"></div></div>
+     <div class="card">
+      <h3 class="section-title">Progresso por disciplina</h3>
+      <div id="subjectProgress"></div>
+     </div>
+    </div>
+
+    <div id="study" class="view">
+     <div class="card">
+      <h2 class="section-title">Estudo guiado</h2>
+      <p class="muted">Escolha uma disciplina e avance por conteúdo curto, aplicação e prática.</p>
+      <div id="studySubjects" class="chips"></div>
+      <div id="lessonBox"></div>
+     </div>
+    </div>
+
+    <div id="questions" class="view">
+     <div class="card">
+      <h2 class="section-title">Treino de questões</h2>
+      <div class="controls">
+       <label>Disciplina
+        <select id="qSubject">
+         <option>Português</option><option>Raciocínio Lógico</option><option>Dir. Administrativo</option><option>Dir. Constitucional</option><option>Informática</option>
+        </select>
+       </label>
+       <label>Quantidade
+        <select id="qCount"><option value="5">5</option><option value="10" selected>10</option></select>
+       </label>
+       <label>Modo
+        <select id="qMode"><option value="treino">Treino comentado</option><option value="prova">Modo prova</option></select>
+       </label>
+      </div>
+      <button id="startQuestions" class="btn btn-primary">Iniciar treino</button>
+      <div id="questionBox"></div>
+     </div>
+    </div>
+
+    <div id="reviews" class="view">
+     <div class="card">
+      <h2 class="section-title">Revisões</h2>
+      <p class="muted">Os erros mais recentes aparecem aqui para retomada.</p>
+      <div id="reviewBox"></div>
+     </div>
+    </div>
+
+    
+<div id="plans" class="view">
+ <div class="card">
+  <h2 class="section-title">Planos e acesso</h2>
+  <p class="muted">Estrutura comercial para liberar recursos por plano sem bloquear o funcionamento local.</p>
+  <div id="accessStatus"></div>
+  <div class="plan-grid">
+   <div class="plan-card">
+    <h3>Essencial</h3>
+    <div class="price">R$ 29,90</div>
+    <p class="muted">Acesso básico a estudo, questões e revisões.</p>
+    <button class="btn btn-ghost selectPlanBtn" data-plan="Essencial">Selecionar</button>
+   </div>
+   <div class="plan-card featured">
+    <h3>Pro</h3>
+    <div class="price">R$ 59,90</div>
+    <p class="muted">Inclui relatórios, plano de estudo e recursos adaptativos.</p>
+    <button class="btn btn-primary selectPlanBtn" data-plan="Pro">Selecionar</button>
+   </div>
+   <div class="plan-card">
+    <h3>Premium</h3>
+    <div class="price">R$ 89,90</div>
+    <p class="muted">Preparado para conteúdos extras e futuros recursos online.</p>
+    <button class="btn btn-ghost selectPlanBtn" data-plan="Premium">Selecionar</button>
+   </div>
+  </div>
+  <div class="note" style="margin-top:12px"><b>Importante:</b> nesta 2.1, a seleção de plano funciona como controle interno/local. Cobrança real exige integração futura com um gateway de pagamento e validação no backend.</div>
+ </div>
+</div>
+
+<div id="admin" class="view">
+ <div class="card">
+  <h2 class="section-title">Painel administrativo</h2>
+  <p class="muted">Gerencie conteúdo e questões localmente. Em produção, usuários e licenças devem ser administrados pelo backend.</p>
+  <div class="admin-grid">
+   <div class="admin-card">
+    <h3>Adicionar questão</h3>
+    <div class="form-grid">
+      <label>Disciplina<select id="adminSubject"><option>Português</option><option>Raciocínio Lógico</option><option>Dir. Administrativo</option><option>Dir. Constitucional</option><option>Informática</option></select></label>
+      <label>Gabarito (0-3)<input id="adminAnswer" type="number" min="0" max="3" value="0"></label>
+    </div>
+    <label>Enunciado<input id="adminQuestion" type="text" placeholder="Digite a questão"></label>
+    <label>Alternativa A<input id="adminO0" type="text"></label>
+    <label>Alternativa B<input id="adminO1" type="text"></label>
+    <label>Alternativa C<input id="adminO2" type="text"></label>
+    <label>Alternativa D<input id="adminO3" type="text"></label>
+    <label>Comentário<input id="adminExplain" type="text" placeholder="Explique o gabarito"></label>
+    <button class="btn btn-primary" id="adminAddQuestion">Salvar questão</button>
+   </div>
+   <div class="admin-card">
+    <h3>Conteúdo atual</h3>
+    <div id="adminStats"></div>
+    <button class="btn btn-secondary" id="exportDataBtn">Exportar dados locais</button>
+    <button class="btn btn-danger" id="clearCustomBtn" style="margin-top:8px">Limpar questões adicionadas</button>
+   </div>
+  </div>
+
+  <div class="admin-card" style="margin-top:14px">
+   <h3>Questões adicionadas</h3>
+   <div class="table-wrap"><table><thead><tr><th>Disciplina</th><th>Questão</th><th>Gabarito</th></tr></thead><tbody id="adminQuestionTable"></tbody></table></div>
+  </div>
+
+  <div class="note" style="margin-top:12px"><b>Segurança:</b> listar usuários, alterar assinaturas reais ou liberar acesso de terceiros exige função segura no servidor. A chave <code>service_role</code> nunca deve ficar neste HTML.</div>
+ </div>
+</div>
+
+<div id="profile" class="view">
+     <div class="card">
+      <h2 class="section-title">Meu perfil</h2>
+      <label>Meta diária de questões
+       <input type="number" id="dailyGoal" min="5" max="100" value="20">
+      </label>
+      <label>Área de interesse
+       <select id="targetArea">
+        <option>Administrativa</option><option>Tribunais</option><option>Tecnologia</option><option>Fiscal/Controle</option><option>Segurança Pública</option>
+       </select>
+      </label>
+      <button id="saveProfile" class="btn btn-primary">Salvar preferências</button>
+      <div id="profileMsg"></div>
+     </div>
+    </div>
+   </section>
+  </div>
+ </section>
+</main>
+
+<footer class="footer">
+ <b>Concurso IA 2.1 — versão comercial online-ready</b><br>
+ © 2026 Nailson Rodrigues de Lima. Todos os direitos reservados.<br>
+ Uso educacional. A plataforma auxilia o estudo e a organização da aprendizagem, sem garantia de aprovação.
+</footer>
+
+<nav class="bottom-nav" id="bottomNav">
+ <button data-view="dashboard" class="active">Painel</button>
+ <button data-view="study">Estudar</button>
+ <button data-view="questions">Questões</button>
+ <button data-view="reviews">Revisões</button>
+ <button data-view="profile">Perfil</button>
+</nav>
+
+<script>
+/* ============================================================
+   CONFIGURAÇÃO SUPABASE — CONCURSO IA 2.1
+
+   1) Substitua https://xacuawtdrdqjoyxmkykg.supabase.co pela Project URL.
+   2) Substitua sb_publishable_G_jbQLjCpqVYxSGT4LC7bw_9YBmjZWI pela Publishable Key.
+
+   IMPORTANTE:
+   - Use somente a Publishable Key.
+   - NÃO use service_role.
+   - NÃO use Secret Key.
+   - NÃO use Personal Access Token aqui.
+   ============================================================ */
+
+window.CONCURSO_CONFIG = {
+  SUPABASE_URL: "https://xacuawtdrdqjoyxmkykg.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_G_jbQLjCpqVYxSGT4LC7bw_9YBmjZWI"
+};
+</script>
+<script>
+(function(){
+'use strict';
+
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+
+const cfg=window.CONCURSO_CONFIG||{};
+const configured=!!(cfg.SUPABASE_URL && cfg.SUPABASE_ANON_KEY);
+const sb=(configured && window.supabase)?window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY):null;
+
+let currentUser=null;
+let demoMode=true;
+
+const subjects=["Português","Raciocínio Lógico","Dir. Administrativo","Dir. Constitucional","Informática"];
+const lessons={
+ "Português":"Interpretação, concordância, crase e pontuação. Estratégia: identifique primeiro o comando da questão, depois a regra e só então compare as alternativas.",
+ "Raciocínio Lógico":"Transforme o enunciado em relações simples. Trabalhe proposições, negações, porcentagem e proporcionalidade.",
+ "Dir. Administrativo":"Estude por contraste: anulação x revogação, desconcentração x descentralização, poderes administrativos e princípios.",
+ "Dir. Constitucional":"Combine texto constitucional, direitos fundamentais, poderes e situações práticas de prova.",
+ "Informática":"Diferencie ameaça, controle, protocolo, autenticação e recuperação. Foque segurança, internet, redes e produtividade."
+};
+
+let bank=[
+ {s:"Português",q:"Em “Faz dois anos que estudo”, o verbo fazer fica no singular porque:",o:["Concorda com “anos”","É impessoal ao indicar tempo decorrido","O sujeito está oculto","É verbo auxiliar"],a:1,ex:"Quando 'fazer' indica tempo decorrido, é impessoal."},
+ {s:"Português",q:"A reescrita que mantém valor concessivo de “Apesar da dificuldade” é:",o:["Porque havia dificuldade","Embora houvesse dificuldade","Se houvesse dificuldade","Como havia dificuldade"],a:1,ex:"'Embora' mantém a relação concessiva."},
+ {s:"Raciocínio Lógico",q:"Se 40% de uma turma correspondem a 24 alunos, o total é:",o:["48","50","60","64"],a:2,ex:"24 ÷ 0,40 = 60."},
+ {s:"Raciocínio Lógico",q:"A negação de “Todos estudam” é:",o:["Ninguém estuda","Algum não estuda","Todos não estudam","Alguns estudam"],a:1,ex:"A negação de 'todos' é 'existe pelo menos um que não'."},
+ {s:"Dir. Administrativo",q:"Ato válido que se tornou inconveniente relaciona-se, em tese, à:",o:["Anulação","Revogação","Cassação","Convalidação"],a:1,ex:"Revogação trata de mérito administrativo, quando juridicamente possível."},
+ {s:"Dir. Administrativo",q:"Distribuição interna de competências é chamada de:",o:["Descentralização","Desconcentração","Privatização","Delegação legislativa"],a:1,ex:"Desconcentração ocorre dentro da mesma pessoa jurídica."},
+ {s:"Dir. Constitucional",q:"Habeas corpus protege, em regra:",o:["Direito líquido e certo","Liberdade de locomoção","Dados pessoais","Patrimônio público"],a:1,ex:"O habeas corpus tutela a liberdade de locomoção."},
+ {s:"Dir. Constitucional",q:"Entre os princípios expressos do art. 37 da Constituição está:",o:["Autotutela","Eficiência","Supremacia","Especialidade"],a:1,ex:"Eficiência integra o conjunto expresso do caput do art. 37."},
+ {s:"Informática",q:"Qual opção representa melhor autenticação multifator?",o:["Duas senhas","Senha + código no celular","Usuário + senha","PIN + senha"],a:1,ex:"MFA combina fatores de categorias diferentes."},
+ {s:"Informática",q:"Ransomware normalmente busca:",o:["Melhorar desempenho","Criptografar ou bloquear dados e exigir pagamento","Atualizar drivers","Criar backup"],a:1,ex:"Ransomware é malware de extorsão."}
+];
+
+
+function getCommercialState(){
+ return JSON.parse(localStorage.getItem("ci21_commercial")||'{"plan":"Essencial","active":true}');
+}
+function setCommercialState(x){localStorage.setItem("ci21_commercial",JSON.stringify(x))}
+function getCustomQuestions(){return JSON.parse(localStorage.getItem("ci21_custom_questions")||"[]")}
+function saveCustomQuestions(x){localStorage.setItem("ci21_custom_questions",JSON.stringify(x))}
+function mergeCustomQuestions(){
+ const custom=getCustomQuestions();
+ const seen=new Set(bank.map(x=>x.q));
+ custom.forEach(q=>{if(!seen.has(q.q)){bank.push(q);seen.add(q.q)}});
+}
+function renderAccess(){
+ const s=getCommercialState();
+ const html=`<span class="${s.active?'access-ok':'access-off'}">${s.active?'Acesso ativo':'Acesso inativo'}</span> <b style="margin-left:8px">${s.plan}</b>`;
+ const a=$("#accessStatus"); if(a)a.innerHTML=html;
+ const d=$("#dashAccess"); if(d)d.innerHTML=html+'<p class="muted">Controle local da licença nesta versão.</p>';
+}
+function renderAdmin(){
+ const custom=getCustomQuestions();
+ $("#adminStats").innerHTML=`<div class="stats" style="grid-template-columns:1fr 1fr"><div class="stat"><b>${bank.length}</b><span>Questões disponíveis</span></div><div class="stat"><b>${custom.length}</b><span>Adicionadas localmente</span></div></div>`;
+ $("#adminQuestionTable").innerHTML=custom.length?custom.map(q=>`<tr><td>${q.s}</td><td>${q.q}</td><td>${String.fromCharCode(65+q.a)}</td></tr>`).join(""):'<tr><td colspan="3">Nenhuma questão adicionada.</td></tr>';
+}
+function exportLocalData(){
+ const data={
+  profile:JSON.parse(localStorage.getItem("ci20_profile")||"{}"),
+  progress:JSON.parse(localStorage.getItem("ci20_progress")||"{}"),
+  reviews:JSON.parse(localStorage.getItem("ci20_reviews")||"[]"),
+  commercial:getCommercialState(),
+  custom_questions:getCustomQuestions()
+ };
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json;charset=utf-8"});
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="concurso_ia_2_1_backup.json";
+ a.click();
+ setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function configMessage(){
+ const box=$("#configStatus");
+ if(configured){
+  box.innerHTML="<b>Nuvem configurada:</b> o login Google pode ser ativado após concluir o provedor Google no painel Supabase.";
+ }else{
+  box.innerHTML="<b>Modo local pronto:</b> esta versão funciona sem configuração. O botão Google só será ativado quando você inserir as credenciais do Supabase.";
+ }
+}
+
+function showApp(user, local=false){
+ demoMode=local;
+ currentUser=user||{id:"local",email:"modo.local@dispositivo",user_metadata:{full_name:"Usuário local"}};
+ $("#landing").classList.add("hidden");
+ $("#app").classList.remove("hidden");
+ const name=currentUser.user_metadata?.full_name||currentUser.email?.split("@")[0]||"Usuário";
+ $("#userName").textContent=name;
+ $("#userEmail").textContent=local?"Modo local — progresso neste dispositivo":(currentUser.email||"Conta conectada");
+ $("#avatar").textContent=(name[0]||"U").toUpperCase();
+ loadData();
+}
+
+function switchView(id){
+ $$(".view").forEach(v=>v.classList.toggle("active",v.id===id));
+ $$("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===id));
+ if(id==="reviews") renderReviews();
+ if(id==="plans") renderAccess();
+ if(id==="admin") renderAdmin();
+}
+
+$$("[data-view]").forEach(b=>b.addEventListener("click",()=>switchView(b.dataset.view)));
+
+async function loginGoogle(){
+ if(!configured || !sb){
+  alert("O login Google ainda não está configurado. Use o modo local agora. Depois, insira sua URL e chave pública do Supabase e ative o provedor Google.");
+  return;
+ }
+ const redirect=window.location.href.split("#")[0];
+ const {error}=await sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:redirect}});
+ if(error) alert("Falha no login Google: "+error.message);
+}
+
+$("#googleBtn").addEventListener("click",loginGoogle);
+$("#topGoogleBtn").addEventListener("click",loginGoogle);
+$("#demoBtn").addEventListener("click",()=>showApp(null,true));
+$("#logoutBtn").addEventListener("click",async()=>{
+ if(sb && !demoMode) await sb.auth.signOut();
+ location.reload();
+});
+
+async function boot(){
+ configMessage();
+ mergeCustomQuestions();
+ renderAccess();
+ if(!configured || !sb) return;
+ try{
+  const {data:{session}}=await sb.auth.getSession();
+  if(session?.user) showApp(session.user,false);
+  sb.auth.onAuthStateChange((_event,session)=>{
+   if(session?.user && !currentUser) showApp(session.user,false);
+  });
+ }catch(e){
+  console.warn("Supabase indisponível:",e);
+ }
+}
+boot();
+
+function defaultProgress(){return {answered:0,correct:0,subjects:{}}}
+function defaultProfile(){return {daily_goal:20,target_area:"Administrativa"}}
+
+async function loadData(){
+ let profile=defaultProfile(), progress=defaultProgress();
+ if(demoMode){
+  profile=JSON.parse(localStorage.getItem("ci20_profile")||JSON.stringify(profile));
+  progress=JSON.parse(localStorage.getItem("ci20_progress")||JSON.stringify(progress));
+ }else if(sb && currentUser){
+  try{
+   const {data:p}=await sb.from("profiles").select("*").eq("user_id",currentUser.id).maybeSingle();
+   if(p) profile=p;
+   const {data:pr}=await sb.from("progress").select("*").eq("user_id",currentUser.id).maybeSingle();
+   if(pr) progress={answered:pr.answered||0,correct:pr.correct||0,subjects:pr.subjects||{}};
+  }catch(e){ console.warn(e); }
+ }
+ $("#dailyGoal").value=profile.daily_goal||20;
+ $("#targetArea").value=profile.target_area||"Administrativa";
+ renderDashboard(progress);
+ renderStudy();
+}
+
+function renderDashboard(p){
+ const acc=p.answered?Math.round(p.correct/p.answered*100):0;
+ const reviews=getReviews();
+ $("#stats").innerHTML=[
+  ["Questões",p.answered],["Acertos",acc+"%"],["Revisões",reviews.length],["Meta",$("#dailyGoal").value+"/dia"]
+ ].map(x=>`<div class="stat"><b>${x[1]}</b><span>${x[0]}</span></div>`).join("");
+
+ $("#subjectProgress").innerHTML=subjects.map(s=>{
+  const x=p.subjects?.[s]||{answered:0,correct:0};
+  const a=x.answered?Math.round(x.correct/x.answered*100):0;
+  return `<div><b>${s}: ${a}%</b><div class="progress"><span style="width:${a}%"></span></div></div>`;
+ }).join("");
+
+ const arr=subjects.map(s=>{
+  const x=p.subjects?.[s]||{answered:0,correct:0};
+  return [s,x.answered?Math.round(x.correct/x.answered*100):0];
+ }).sort((a,b)=>a[1]-b[1]);
+ $("#focusTitle").textContent=`${arr[0][0]} + prática`;
+ $("#focusText").textContent=`Priorize ${arr[0][0]} e faça um bloco curto com correção imediata.`;
+ renderAccess();
+}
+
+function renderStudy(){
+ $("#studySubjects").innerHTML=subjects.map((s,i)=>`<button class="chip ${i===0?'active':''}" data-sub="${s}">${s}</button>`).join("");
+ $$("[data-sub]").forEach(b=>b.addEventListener("click",()=>{
+  $$("[data-sub]").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  $("#lessonBox").innerHTML=`<div class="lesson"><h3>${b.dataset.sub}</h3><p>${lessons[b.dataset.sub]}</p><p><b>Aplicação:</b> feche o conteúdo, explique com suas próprias palavras e resolva uma questão logo depois.</p></div>`;
+ }));
+ $$("[data-sub]")[0]?.click();
+}
+
+$("#startQuestions").addEventListener("click",()=>{
+ const subject=$("#qSubject").value;
+ const count=Number($("#qCount").value);
+ let pool=bank.filter(q=>q.s===subject);
+ if(pool.length<count) pool=bank;
+ const qs=[...pool].sort(()=>Math.random()-.5).slice(0,Math.min(count,pool.length));
+ $("#questionBox").innerHTML=qs.map((q,i)=>`
+  <div class="question">
+   <b>${i+1}. ${q.q}</b>
+   ${q.o.map((o,j)=>`<label class="option"><input type="radio" name="qq${i}" value="${j}"> <span>${o}</span></label>`).join("")}
+  </div>`).join("")+`<button id="correctBtn" class="btn btn-primary">Corrigir</button><div id="qResult"></div>`;
+ $("#correctBtn").addEventListener("click",()=>correctQuestions(qs));
+});
+
+async function correctQuestions(qs){
+ let ok=0,answered=0,sub={};
+ let reviews=getReviews();
+ let detail="";
+ qs.forEach((q,i)=>{
+  const el=document.querySelector(`input[name="qq${i}"]:checked`);
+  if(!el) return;
+  answered++;
+  const chosen=Number(el.value);
+  const correct=chosen===q.a;
+  if(correct) ok++;
+  sub[q.s]=sub[q.s]||{answered:0,correct:0};
+  sub[q.s].answered++;
+  if(correct) sub[q.s].correct++;
+  if(!correct) reviews.push({id:Date.now()+"_"+i,subject:q.s,q:q.q,answer:q.o[q.a],due:new Date(Date.now()+86400000).toLocaleDateString("pt-BR")});
+  detail += `<div class="result"><b>${i+1}. ${correct?"✅ Correta":"❌ Revisar"}</b><p>${q.ex}</p></div>`;
+ });
+ if(answered===0){alert("Responda pelo menos uma questão.");return}
+ saveReviews(reviews.slice(-100));
+ const prior=await getProgress();
+ prior.answered+=answered; prior.correct+=ok;
+ Object.entries(sub).forEach(([s,x])=>{
+  prior.subjects[s]=prior.subjects[s]||{answered:0,correct:0};
+  prior.subjects[s].answered+=x.answered;
+  prior.subjects[s].correct+=x.correct;
+ });
+ await saveProgress(prior);
+ renderDashboard(prior);
+ $("#qResult").innerHTML=`<div class="result"><b>${ok}/${answered} acertos</b><p>Os erros foram enviados para Revisões.</p></div>${detail}`;
+}
+
+async function getProgress(){
+ if(demoMode) return JSON.parse(localStorage.getItem("ci20_progress")||JSON.stringify(defaultProgress()));
+ try{
+  const {data}=await sb.from("progress").select("*").eq("user_id",currentUser.id).maybeSingle();
+  return data?{answered:data.answered||0,correct:data.correct||0,subjects:data.subjects||{}}:defaultProgress();
+ }catch(e){ return defaultProgress(); }
+}
+
+async function saveProgress(p){
+ if(demoMode){localStorage.setItem("ci20_progress",JSON.stringify(p));return}
+ await sb.from("progress").upsert({user_id:currentUser.id,answered:p.answered,correct:p.correct,subjects:p.subjects,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+}
+
+$("#saveProfile").addEventListener("click",async()=>{
+ const p={daily_goal:Number($("#dailyGoal").value),target_area:$("#targetArea").value};
+ if(demoMode){
+  localStorage.setItem("ci20_profile",JSON.stringify(p));
+ }else{
+  await sb.from("profiles").upsert({user_id:currentUser.id,...p,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+ }
+ $("#profileMsg").innerHTML='<div class="result">Preferências salvas.</div>';
+ const pr=await getProgress(); renderDashboard(pr);
+});
+
+function getReviews(){return JSON.parse(localStorage.getItem("ci20_reviews")||"[]")}
+function saveReviews(x){localStorage.setItem("ci20_reviews",JSON.stringify(x))}
+function renderReviews(){
+ const r=getReviews();
+ $("#reviewBox").innerHTML=r.length?r.map(x=>`<div class="question"><b>${x.subject}</b><p>${x.q}</p><small>Revisar em: ${x.due}</small><div class="result">Resposta correta: ${x.answer}</div></div>`).join(""):'<div class="empty">Nenhuma revisão pendente.</div>';
+}
+$$(".selectPlanBtn").forEach(b=>b.addEventListener("click",()=>{
+ const s=getCommercialState(); s.plan=b.dataset.plan; s.active=true; setCommercialState(s); renderAccess();
+ alert("Plano selecionado: "+s.plan+". Nesta versão, não há cobrança automática.");
+}));
+$("#adminAddQuestion").addEventListener("click",()=>{
+ const q=$("#adminQuestion").value.trim();
+ const opts=[$("#adminO0").value.trim(),$("#adminO1").value.trim(),$("#adminO2").value.trim(),$("#adminO3").value.trim()];
+ const a=Number($("#adminAnswer").value);
+ if(!q || opts.some(x=>!x) || a<0 || a>3){alert("Preencha enunciado, quatro alternativas e gabarito.");return}
+ const item={s:$("#adminSubject").value,q,o:opts,a,ex:$("#adminExplain").value.trim()||"Comentário não informado."};
+ const custom=getCustomQuestions();custom.push(item);saveCustomQuestions(custom);bank.push(item);
+ $("#adminQuestion").value="";["#adminO0","#adminO1","#adminO2","#adminO3","#adminExplain"].forEach(id=>$(id).value="");
+ renderAdmin();alert("Questão adicionada.");
+});
+$("#exportDataBtn").addEventListener("click",exportLocalData);
+$("#clearCustomBtn").addEventListener("click",()=>{
+ if(confirm("Apagar todas as questões adicionadas localmente?")){
+  localStorage.removeItem("ci21_custom_questions");location.reload();
+ }
+});
+
+})();
+</script>
+</body>
+</html>
